@@ -1,19 +1,21 @@
-from django.shortcuts import render, HttpResponse
+# from django.shortcuts import render, HttpResponse
 from .models import Article
-from django.http import JsonResponse
-from rest_framework.parsers import JSONParser
+# from django.http import JsonResponse
+# from rest_framework.parsers import JSONParser
 from .serializers import ArticleSerializer
-from rest_framework.response import Response
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view
-from django.http import Http404
-from rest_framework import mixins
-from rest_framework import generics
+#from rest_framework.response import Response
+# from django.views.decorators.csrf import csrf_exempt
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import status
+# from rest_framework.views import APIView
+# from rest_framework.decorators import api_view
+# from django.http import Http404
+# from rest_framework import mixins
+# from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -22,20 +24,23 @@ class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     lookup_field = 'slug'
 
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+
 
     #def perform_create(self, serializer):
         #serializer.save(author=self.request.user)
 
 
 # Generic Viewset Lesson
-class ArticleViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
-                     mixins.CreateModelMixin,
-                     mixins.RetrieveModelMixin,
-                     mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+# class ArticleViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
+#                      mixins.CreateModelMixin,
+#                      mixins.RetrieveModelMixin,
+#                      mixins.UpdateModelMixin, mixins.DestroyModelMixin):
 
-    queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
-    lookup_field = 'slug'
+#     queryset = Article.objects.all()
+#     serializer_class = ArticleSerializer
+#     lookup_field = 'slug'
 
 
 
@@ -104,47 +109,47 @@ class ArticleViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
 
 
 # Class Based API Views
-class ArticleList(APIView):
+# class ArticleList(APIView):
 
-    def get(self, request):
-        articles = Article.objects.all()
-        serializer = ArticleSerializer(articles, many=True)
-        return Response(serializer.data)
+#     def get(self, request):
+#         articles = Article.objects.all()
+#         serializer = ArticleSerializer(articles, many=True)
+#         return Response(serializer.data)
 
 
-    def post(self, request):
-        serializer = ArticleSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     def post(self, request):
+#         serializer = ArticleSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
-class ArticleDetails(APIView):
-    def get_object(self, slug):
-        try:
-            return Article.objects.get(slug=slug)
-        except Article.DoesNotExist:
-            raise Http404
+# class ArticleDetails(APIView):
+#     def get_object(self, slug):
+#         try:
+#             return Article.objects.get(slug=slug)
+#         except Article.DoesNotExist:
+#             raise Http404
 
-    def get(self, request, slug):
-        article = self.get_object(slug)
-        serializer = ArticleSerializer(article)
-        return Response(serializer.data)
+#     def get(self, request, slug):
+#         article = self.get_object(slug)
+#         serializer = ArticleSerializer(article)
+#         return Response(serializer.data)
 
-    def put(self, request, slug):
-        article = self.get_object(slug)
-        serializer = ArticleSerializer(article, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request, slug):
+#         article = self.get_object(slug)
+#         serializer = ArticleSerializer(article, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, slug):
-        article = self.get_object(slug)
-        article.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, slug):
+#         article = self.get_object(slug)
+#         article.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # @api_view(['GET', 'POST'])
